@@ -1,0 +1,19 @@
+{
+  "name": "rpdl-scrape",
+  "version": "1.0.0",
+  "description": "Get started:\r Fill out token.json like so:\r \"token.here-bop\"",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "rakema01",
+  "license": "ISC",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/rakema01/rpdl-tools.git"
+  },
+  "bugs": {
+    "url": "https://github.com/rakema01/rpdl-tools/issues"
+  },
+  "homepage": "https://github.com/rakema01/rpdl-tools#readme"
+}

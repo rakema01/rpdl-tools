@@ -1,0 +1,6 @@
+#Ignore folders
+files/
+
+#Data
+data.json
+token.json
