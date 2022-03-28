@@ -125,8 +125,11 @@ async function parseResult(data){
 }
 
 function fetchTorrents(){
+    if(!token){
+        console.log("Token is not set! Please check your options.");
+        return;
+    }
     try{
-        token = JSON.parse(fs.readFileSync(tokenFile));
         https.get(new Options("/api/torrents?page_size=5000&sort=uploaded_DESC"), res => {
             if(res.statusCode >= 400){
                 console.log(`Error ${res.statusCode} trying to fetch the torrent list!`);

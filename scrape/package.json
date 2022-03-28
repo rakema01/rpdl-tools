@@ -1,7 +1,7 @@
 {
   "name": "rpdl-scrape",
   "version": "1.0.0",
-  "description": "Get started:\r Fill out token.json like so:\r \"token.here-bop\"",
+  "description": "Scrape torrents from the rpdl website",
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
