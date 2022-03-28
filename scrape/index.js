@@ -136,7 +136,7 @@ function fetchTorrents(){
                 return;
             }
             console.log('statusCode:', res.statusCode);
-            // console.log('headers:', res.headers);
+            
             let data = ""
             res.on('data', d => {
                 data += d
