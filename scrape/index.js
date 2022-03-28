@@ -3,7 +3,8 @@ const fs = require("fs");
 const dlPath = `${process.cwd()}/files`;
 
 const userOptions = JSON.parse(fs.readFileSync("./options.json")) || {
-    "token" : "",
+    "token": "",
+    "tokenUpdated": 0,
     "waitTimeInSeconds": 60,
     "useLogin": false,
     "loginData": {
@@ -14,6 +15,7 @@ const userOptions = JSON.parse(fs.readFileSync("./options.json")) || {
 
 let {
     token,
+    tokenUpdated,
     waitTimeInSeconds,
     useLogin,
     loginData
@@ -55,11 +57,11 @@ const downloadTorrent = (torrent) => {
     })
 }
 function getTokenFromLogin(){
+    if(!loginData || !loginData.login || !loginData.password){
+        console.log("Login data is missing! Skipping login...");
+        return;
+    }
     return new Promise((resolve, reject) => {
-        if(!loginData || !loginData.login || !loginData.password){
-            console.log("Login data is missing! Skipping login...");
-            return;
-        }
         const loginString = JSON.stringify(loginData);
         
         const req = https.request({
@@ -84,6 +86,8 @@ function getTokenFromLogin(){
     
             res.on("end", () => {
                 token = JSON.parse(data).data.token;
+                tokenUpdated = Date.now();
+                userOptions.tokenUpdated = tokenUpdated; 
                 userOptions.token = token;
                 fs.writeFileSync("./options.json",JSON.stringify(userOptions, null, "\t"));
                 resolve();
@@ -150,7 +154,7 @@ function fetchTorrents(){
     }
 }
 async function init(){
-    if(useLogin){
+    if(useLogin && Date.now() - tokenUpdated >= 24 * 60 * 60 * 1000){
         await getTokenFromLogin();
         setInterval(getTokenFromLogin, 24 * 60 * 60 * 1000);
     }

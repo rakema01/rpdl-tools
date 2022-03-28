@@ -1,5 +1,6 @@
 {
 	"token": "",
+    "tokenUpdated": 0,
 	"waitTimeInSeconds": 60,
 	"useLogin": true,
 	"loginData": {
