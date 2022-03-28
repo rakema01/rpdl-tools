@@ -1,17 +1,26 @@
-const waitTimeInSeconds = 60;
-
 const https = require("https");
 const fs = require("fs");
-
-let token = "";
 const dlPath = `${process.cwd()}/files`;
-const tokenFile = `${process.cwd()}/token.json`;
+
+const userOptions = JSON.parse(fs.readFileSync("./options.json")) || {
+    "token" : "",
+    "waitTimeInSeconds": 60,
+    "useLogin": false,
+    "loginData": {
+        "login": "username",
+        "password": "password"
+    }
+};
+
+let {
+    token,
+    waitTimeInSeconds,
+    useLogin,
+    loginData
+} = userOptions;
 
 if(!fs.existsSync(dlPath)){
     fs.mkdirSync(dlPath, {recursive: true});
-}
-if(!fs.existsSync(tokenFile)){
-    fs.writeFileSync(tokenFile, JSON.stringify(token));
 }
 
 class Options{
@@ -45,6 +54,50 @@ const downloadTorrent = (torrent) => {
         })
     })
 }
+function getTokenFromLogin(){
+    return new Promise((resolve, reject) => {
+        if(!loginData || !loginData.login || !loginData.password){
+            console.log("Login data is missing! Skipping login...");
+            return;
+        }
+        const loginString = JSON.stringify(loginData);
+        
+        const req = https.request({
+            hostname: "dl.rpdl.net",
+            port: 443,
+            path: "/api/user/login",
+            method: "POST",
+            headers: {
+                'Content-Type': "application/json",
+                'Content-Length': loginString.length
+            }
+        }, res => {
+            if(res.statusCode != 200){
+                console.log("Login failed!");
+                console.log(res);
+                return;
+            }
+            let data = "";
+            res.on("data", d => {
+                data += d;
+            })
+    
+            res.on("end", () => {
+                token = JSON.parse(data).data.token;
+                userOptions.token = token;
+                fs.writeFileSync("./options.json",JSON.stringify(userOptions, null, "\t"));
+                resolve();
+            })
+        })
+    
+        req.on("error", err => {
+            console.log(err);
+        });
+        req.write(loginString);
+        req.end();
+
+    });
+}
 
 async function parseResult(data){
     const downloaded = fs.existsSync(`data.json`) ? Array.from(JSON.parse(fs.readFileSync(`data.json`))) : [];
@@ -71,7 +124,7 @@ async function parseResult(data){
     });
 }
 
-function init(){
+function fetchTorrents(){
     try{
         token = JSON.parse(fs.readFileSync(tokenFile));
         https.get(new Options("/api/torrents?page_size=5000&sort=uploaded_DESC"), res => {
@@ -93,5 +146,13 @@ function init(){
         console.log("Failed to get torrent list!");
     }
 }
+async function init(){
+    if(useLogin){
+        await getTokenFromLogin();
+        setInterval(getTokenFromLogin, 60 * 60 * 1000);
+    }
+    fetchTorrents();
+    setInterval(fetchTorrents, waitTimeInSeconds * 1000);
+}
+
 init();
-setInterval(init, waitTimeInSeconds * 1000);

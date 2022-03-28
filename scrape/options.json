@@ -1,0 +1,9 @@
+{
+	"token": "",
+	"waitTimeInSeconds": 60,
+	"useLogin": true,
+	"loginData": {
+		"login": "",
+		"password": ""
+	}
+}

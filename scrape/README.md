@@ -1,20 +1,12 @@
 # Getting Started
 
-Fill out token.json like so:
+Fill out `options.json` as needed
 
-	"token.here-bop"
+If you are not planning to enable logins, set `useLogin` to `false` and make sure you update the token every week or 2, as they expire 2 weeks after you login.
 
-You can change this file while the script is running. It will automatically pull your new token the next time it tries to grab torrents.
+This means you would need to sign out, then sign back into dl.rpdl.net and grab your new token.
 
-You can get your token by logging into dl.rpdl.net, opening inspect element, clicking on Storage, then going to Local Storage and selecting https://dl.rpdl.net
-
-You should then be able to see a table, with the key being `torrust_user` and the value being an object encoded as a JSON string
-
-Copy the string after token, for example:
-
-	"token":"this.is-your!token"
-
-Update `token.json` as needed
+Otherwise, you can set `useLogin` to `true` and fill out `loginData` as needed. You can leave `token` empty as that will get filled out automatically.
 
 ## Pull all torrents currently being tracked:
 
@@ -24,6 +16,6 @@ data.json exists to keep track of what torrents you have downloaded. This is to 
 
 ## Running the script a single time
 
-If you want to run the script as a one-time fetch to use with crontab or the like, open up `index.js` with your favorite text editor and delete the final line
+If you want to run the script as a one-time fetch to use with crontab or the like, open up `index.js` with your favorite text editor and delete lines 152 and 155
 
-If you can't find it, it's the line that starts with `setInterval`. Delete that and the contents in the parentheses, along with the semicolon at the end
+If you can't find it, it's the lines that starts with `setInterval`. Delete those and the contents in the parentheses, along with the semicolon at the end
