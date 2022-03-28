@@ -136,7 +136,7 @@ function fetchTorrents(){
                 return;
             }
             console.log('statusCode:', res.statusCode);
-            
+
             let data = ""
             res.on('data', d => {
                 data += d
@@ -152,7 +152,7 @@ function fetchTorrents(){
 async function init(){
     if(useLogin){
         await getTokenFromLogin();
-        setInterval(getTokenFromLogin, 60 * 60 * 1000);
+        setInterval(getTokenFromLogin, 24 * 60 * 60 * 1000);
     }
     fetchTorrents();
     setInterval(fetchTorrents, waitTimeInSeconds * 1000);
