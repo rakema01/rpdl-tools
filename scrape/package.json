@@ -1,6 +1,6 @@
 {
   "name": "rpdl-scrape",
-  "version": "1.0.0",
+  "version": "1.5.0",
   "description": "Scrape torrents from the rpdl website",
   "main": "index.js",
   "scripts": {
