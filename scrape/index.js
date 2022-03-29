@@ -6,6 +6,7 @@ const userOptions = JSON.parse(fs.readFileSync("./options.json")) || {
     "token": "",
     "tokenUpdated": 0,
     "waitTimeInSeconds": 60,
+    "pageSize": 5000,
     "useLogin": false,
     "loginData": {
         "login": "username",
@@ -17,6 +18,7 @@ let {
     token,
     tokenUpdated,
     waitTimeInSeconds,
+    pageSize,
     useLogin,
     loginData
 } = userOptions;
@@ -134,7 +136,7 @@ function fetchTorrents(){
         return;
     }
     try{
-        https.get(new Options("/api/torrents?page_size=5000&sort=uploaded_DESC"), res => {
+        https.get(new Options(`/api/torrents?page_size=${pageSize}&sort=uploaded_DESC`), res => {
             if(res.statusCode >= 400){
                 console.log(`Error ${res.statusCode} trying to fetch the torrent list!`);
                 return;

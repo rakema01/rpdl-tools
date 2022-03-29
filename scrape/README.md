@@ -8,6 +8,8 @@ This means you would need to sign out, then sign back into dl.rpdl.net and grab 
 
 Otherwise, you can set `useLogin` to `true` and fill out `loginData` as needed. You can leave `token` empty as that will get filled out automatically.
 
+You can also edit `pageSize` to specify how many of the latest torrents you want to check for. A sane value would be 100 if you're just trying to grab the newest torrents and build up some ratio from there. If you're trying to grab all the torrents currently being tracked, you can set it to 5000 or some other higher number. By default, this will be 100.
+
 ## Pull all torrents currently being tracked:
 
 If `data.json` exists, delete it. Leave the script running and it'll grab the torrents.
