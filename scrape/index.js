@@ -2,15 +2,16 @@ const https = require("https");
 const fs = require("fs");
 const dlPath = `${process.cwd()}/files`;
 
-const userOptions = JSON.parse(fs.readFileSync("./options.json")) || {
-    "token": "",
-    "tokenUpdated": 0,
-    "waitTimeInSeconds": 60,
-    "pageSize": 5000,
-    "useLogin": false,
-    "loginData": {
-        "login": "username",
-        "password": "password"
+const userOptions = fs.existsSync("./options.json") ? JSON.parse(fs.readFileSync("./options.json")) : {
+    token: "",
+    tokenUpdated: 0,
+    waitTimeInSeconds: 60,
+    pageSize: 50,
+    maxSize: 50,
+    useLogin: false,
+    loginData: {
+        login: "",
+        password: ""
     }
 };
 
@@ -20,11 +21,16 @@ let {
     waitTimeInSeconds,
     pageSize,
     useLogin,
+    maxSize,
     loginData
 } = userOptions;
 
 if(!fs.existsSync(dlPath)){
     fs.mkdirSync(dlPath, {recursive: true});
+}
+
+if(!fs.existsSync("./options.json")){
+    fs.writeFileSync("./options.json",JSON.stringify(userOptions, null, "\t"));
 }
 
 class Options{
@@ -108,7 +114,10 @@ function getTokenFromLogin(){
 async function parseResult(data){
     const downloaded = fs.existsSync(`data.json`) ? Array.from(JSON.parse(fs.readFileSync(`data.json`))) : [];
     const errors = [];
-    const results = data.results.filter(torrent => downloaded.find(v => v == torrent.torrent_id) ? false : true);
+    const results = data.results
+        .filter(torrent => downloaded.find(v => v == torrent.torrent_id) ? false : true)
+        // .filter(torrent => torrent.category_id != 14) //Filter out certain categories (14 is Renpy)
+        .filter(torrent => maxSize > -1 ? torrent.file_size / 1000000 <= maxSize : true);
     results.forEach((torrent,index) => {
         setTimeout(async function(){
             try {
@@ -133,7 +142,7 @@ async function parseResult(data){
 function fetchTorrents(){
     if(!token){
         console.log("Token is not set! Please check your options.");
-        return;
+        process.exit(1);
     }
     try{
         https.get(new Options(`/api/torrents?page_size=${pageSize}&sort=uploaded_DESC`), res => {
