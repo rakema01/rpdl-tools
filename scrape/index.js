@@ -166,7 +166,6 @@ function fetchTorrents(){
                 console.log(`Error ${res.statusCode} trying to fetch the torrent list!`);
                 return;
             }
-            console.log('statusCode:', res.statusCode);
 
             let data = ""
             res.on('data', d => {
