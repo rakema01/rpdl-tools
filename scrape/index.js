@@ -43,7 +43,22 @@ class Options{
         }
     }
 }
+function renameTorrent(title, retries=0){
+    const maxRetries = 5;
+    if(retries == maxRetries){
+        console.log(`Failed to rename ${title} after ${retries} times... Check permissions and make sure you didn't screw it up ;).`);
+        return;
+    }
 
+    setTimeout(() => {
+        fs.rename(`${dlPath}/${title}.torrent.downloading`,`${dlPath}/${title}.torrent`, err => {
+            if(err){
+                console.log(`Failed renaming ${title}`);
+                renameTorrent(title, retries + 1);
+            }
+        })
+    }, 3000)
+}
 const downloadTorrent = (torrent) => {
     if(fs.existsSync(`${dlPath}/${torrent.title}.torrent`)){
         console.log(`${torrent.title} is already downloaded! Skipping...`);
@@ -54,10 +69,11 @@ const downloadTorrent = (torrent) => {
             if(res.statusCode >= 400){
                 reject(`Error ${res.statusCode} accessing https://dl.rpdl.net/torrent/${i}`);
             }
-            const file = fs.createWriteStream(`${dlPath}/${torrent.title}.torrent`);
+            const file = fs.createWriteStream(`${dlPath}/${torrent.title}.torrent.downloading`);
             res.pipe(file);
             res.on('end', () => {
                 console.log(`${torrent.title} finished downloading!`);
+                renameTorrent(torrent.title);
                 resolve();
             })
 
