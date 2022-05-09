@@ -174,6 +174,8 @@ function fetchTorrents(){
             res.on('end', () => {
                 parseResult(JSON.parse(data).data)
             })
+        }).on('error', e => {
+            console.log(`Error while trying to get latest torrents: \n\t${e}`)
         })
     } catch (err) {
         console.log("Failed to get torrent list!");
