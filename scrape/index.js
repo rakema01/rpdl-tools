@@ -25,6 +25,7 @@ let {
     loginData
 } = userOptions;
 
+let busy = false;
 if(!fs.existsSync(dlPath)){
     fs.mkdirSync(dlPath, {recursive: true});
 }
@@ -130,6 +131,7 @@ function getTokenFromLogin(){
 async function parseResult(data){
     const downloaded = fs.existsSync(`data.json`) ? Array.from(JSON.parse(fs.readFileSync(`data.json`))) : [];
     const errors = [];
+    busy = true;
     const results = data.results
         .filter(torrent => downloaded.find(v => v == torrent.torrent_id) ? false : true)
         // .filter(torrent => torrent.category_id != 14) //Filter out certain categories (14 is Renpy)
@@ -142,6 +144,7 @@ async function parseResult(data){
                 if(index == data.results.length - 1){
                     console.log(`${downloaded.length} torrents downloaded!`);
                     console.log(errors);
+                    busy = false;
                 }
                 fs.writeFileSync(`data.json`, JSON.stringify(downloaded));
             } catch (err) {
@@ -149,6 +152,7 @@ async function parseResult(data){
                 if(index == data.results.length - 1){
                     console.log(`${downloaded.length} torrents downloaded!`);
                     console.log(errors);
+                    busy = false;
                 }
             }
         }, index * (1000 / 15))
@@ -160,6 +164,7 @@ function fetchTorrents(){
         console.log("Token is not set! Please check your options.");
         process.exit(1);
     }
+    if(busy) return;
     try{
         https.get(new Options(`/api/torrents?page_size=${pageSize}&sort=uploaded_DESC`), res => {
             if(res.statusCode >= 400){
