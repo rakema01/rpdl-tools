@@ -5,9 +5,9 @@ const dlPath = `${process.cwd()}/files`;
 const userOptions = fs.existsSync("./options.json") ? JSON.parse(fs.readFileSync("./options.json")) : {
     token: "",
     tokenUpdated: 0,
-    waitTimeInSeconds: 60,
-    pageSize: 50,
-    maxSize: 50,
+    waitTimeInSeconds: 180,
+    pageSize: 200,
+    maxSize: -1, //In MB
     useLogin: false,
     loginData: {
         login: "",
