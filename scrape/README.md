@@ -18,6 +18,6 @@ data.json exists to keep track of what torrents you have downloaded. This is to 
 
 ## Running the script a single time
 
-If you want to run the script as a one-time fetch to use with crontab or the like, open up `index.js` with your favorite text editor and delete lines 152 and 155
+If you want to run the script as a one-time fetch to use with crontab or the like, open up `index.js` with your favorite text editor and delete lines 196 and 199
 
 If you can't find it, it's the lines that starts with `setInterval`. Delete those and the contents in the parentheses, along with the semicolon at the end
