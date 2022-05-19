@@ -61,11 +61,11 @@ function renameTorrent(title, retries=0){
     }, 3000)
 }
 const downloadTorrent = (torrent) => {
-    if(fs.existsSync(`${dlPath}/${torrent.title}.torrent`)){
-        console.log(`${torrent.title} is already downloaded! Skipping...`);
-        return;
-    }
     return new Promise((resolve, reject) => {
+        if(fs.existsSync(`${dlPath}/${torrent.title}.torrent`)){
+            console.log(`${torrent.title} is already downloaded! Skipping...`);
+            resolve(false);
+        }
         https.get(new Options(`/api/torrent/download/${torrent.torrent_id}`, token), res => {
             if(res.statusCode >= 400){
                 reject(`Error ${res.statusCode} accessing https://dl.rpdl.net/torrent/${i}`);
@@ -75,7 +75,7 @@ const downloadTorrent = (torrent) => {
             res.on('end', () => {
                 console.log(`${torrent.title} finished downloading!`);
                 renameTorrent(torrent.title);
-                resolve();
+                resolve(true);
             })
 
         })
@@ -136,26 +136,30 @@ async function parseResult(data){
         .filter(torrent => downloaded.find(v => v == torrent.torrent_id) ? false : true)
         // .filter(torrent => torrent.category_id != 14) //Filter out certain categories (14 is Renpy)
         .filter(torrent => maxSize > -1 ? torrent.file_size / 1000000 <= maxSize : true);
+    const promises = [];
     results.forEach((torrent,index) => {
-        setTimeout(async function(){
-            try {
-                await downloadTorrent(torrent);
-                downloaded.push(torrent.torrent_id);
-                if(index == data.results.length - 1){
-                    console.log(`${downloaded.length} torrents downloaded!`);
-                    console.log(errors);
-                    busy = false;
-                }
-                fs.writeFileSync(`data.json`, JSON.stringify(downloaded));
-            } catch (err) {
-                errors.push(err);
-                if(index == data.results.length - 1){
-                    console.log(`${downloaded.length} torrents downloaded!`);
-                    console.log(errors);
-                    busy = false;
-                }
-            }
-        }, index * (1000 / 15))
+        const promise = new Promise((resolve, reject) => {
+            setTimeout(function(){
+                downloadTorrent(torrent)
+                    .then((finishdl) => {
+                        if(!finishdl){
+                            resolve();
+                        }
+                        resolve(torrent.torrent_id);
+                    }, (err) => {
+                        errors.push(err);
+                        resolve();
+                    })
+            }, index * (1000 / 10))
+        });
+        promises.push(promise);
+    });
+    Promise.all(promises).then(ids => {
+        console.log(`${ids.length} torrents downloaded!`);
+        console.log("Errors: ", errors, "\n");
+        busy = false;
+        downloaded.push(...ids);
+        fs.writeFileSync(`data.json`, JSON.stringify(downloaded));
     });
 }
 
