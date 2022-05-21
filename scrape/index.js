@@ -155,11 +155,13 @@ async function parseResult(data){
         promises.push(promise);
     });
     Promise.all(promises).then(ids => {
-        console.log(`${ids.length} torrents downloaded!`);
-        console.log("Errors: ", errors, "\n");
+        if(ids.length > 0){
+            console.log(`${ids.length} torrents downloaded!`);
+            console.log("Errors: ", errors, "\n");
+            downloaded.push(...ids);
+            fs.writeFileSync(`data.json`, JSON.stringify(downloaded));
+        }
         busy = false;
-        downloaded.push(...ids);
-        fs.writeFileSync(`data.json`, JSON.stringify(downloaded));
     });
 }
 
