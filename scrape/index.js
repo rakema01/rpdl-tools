@@ -64,7 +64,7 @@ const downloadTorrent = (torrent) => {
     return new Promise((resolve, reject) => {
         if(fs.existsSync(`${dlPath}/${torrent.title}.torrent`)){
             console.log(`${torrent.title} is already downloaded! Skipping...`);
-            resolve(false);
+            resolve(true);
         }
         https.get(new Options(`/api/torrent/download/${torrent.torrent_id}`, token), res => {
             if(res.statusCode >= 400){
