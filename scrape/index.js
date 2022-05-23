@@ -155,6 +155,7 @@ async function parseResult(data){
         promises.push(promise);
     });
     Promise.all(promises).then(ids => {
+        ids = ids.filter(v => v !== null);
         if(ids.length > 0){
             console.log(`${ids.length} torrents downloaded!`);
             console.log("Errors: ", errors, "\n");
