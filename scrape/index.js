@@ -1,8 +1,8 @@
 const https = require("https");
 const fs = require("fs");
-const dlPath = `${process.cwd()}/files`;
 
 const userOptions = fs.existsSync("./options.json") ? JSON.parse(fs.readFileSync("./options.json")) : {
+    dlPath: `${process.cwd()}/files`,
     token: "",
     tokenUpdated: 0,
     waitTimeInSeconds: 180,
@@ -16,6 +16,7 @@ const userOptions = fs.existsSync("./options.json") ? JSON.parse(fs.readFileSync
 };
 
 let {
+    dlPath,
     token,
     tokenUpdated,
     waitTimeInSeconds,
