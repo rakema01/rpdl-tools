@@ -1,29 +1,20 @@
 const https = require("https");
 const fs = require("fs");
 
-const userOptions = fs.existsSync("./options.json") ? JSON.parse(fs.readFileSync("./options.json")) : {
-    dlPath: `${process.cwd()}/files`,
-    token: "",
-    tokenUpdated: 0,
-    waitTimeInSeconds: 180,
-    pageSize: 200,
-    maxSize: -1, //In MB
-    useLogin: false,
-    loginData: {
+const userOptions = fs.existsSync("./options.json") ? JSON.parse(fs.readFileSync("./options.json")) : {};
+
+let {
+    dlPath=`${process.cwd()}/files`,
+    token="",
+    tokenUpdated=0,
+    waitTimeInSeconds=180,
+    pageSize=200,
+    maxSize=-1, //In MB
+    useLogin=false,
+    loginData={
         login: "",
         password: ""
     }
-};
-
-let {
-    dlPath,
-    token,
-    tokenUpdated,
-    waitTimeInSeconds,
-    pageSize,
-    useLogin,
-    maxSize,
-    loginData
 } = userOptions;
 
 let busy = false;
@@ -32,7 +23,7 @@ if(!fs.existsSync(dlPath)){
 }
 
 if(!fs.existsSync("./options.json")){
-    fs.writeFileSync("./options.json",JSON.stringify(userOptions, null, "\t"));
+    fs.writeFileSync("./options.json",JSON.stringify({dlPath, token, tokenUpdated, waitTimeInSeconds, pageSize, maxSize, useLogin, loginData}, null, "\t"));
 }
 
 class Options{
