@@ -68,7 +68,7 @@ const downloadTorrent = (torrent) => {
         }
         https.get(new Options(`/api/torrent/download/${torrent.torrent_id}`, token), res => {
             if(res.statusCode >= 400){
-                reject(`Error ${res.statusCode} accessing https://dl.rpdl.net/torrent/${i}`);
+                reject(`Error ${res.statusCode} accessing https://dl.rpdl.net/torrent/${torrent.torrent_id}`);
             }
             const file = fs.createWriteStream(`${dlPath}/${torrent.title}.torrent.downloading`);
             res.pipe(file);
